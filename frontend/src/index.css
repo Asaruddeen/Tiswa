@@ -1,0 +1,94 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+* {
+  font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+}
+
+body {
+  background: #f0f4f0;
+  padding-bottom: 80px;
+}
+
+/* Professional Green Theme - Islamic essence */
+:root {
+  --primary-deep: #0f4c2a;
+  --primary-soft: #1e6f3f;
+  --primary-light: #e8f3e8;
+  --accent-gold: #c9a03d;
+  --card-radius: 28px;
+}
+
+.bg-mosque-gradient {
+  background: linear-gradient(145deg, #0f4c2a 0%, #1b6b3c 100%);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(2px);
+  border-radius: var(--card-radius);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.02);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.glass-card:active {
+  transform: scale(0.98);
+}
+
+.bottom-nav button.active {
+  background: #0f4c2a;
+  color: white;
+  box-shadow: 0 6px 14px rgba(15, 76, 42, 0.25);
+}
+
+.bottom-nav i {
+  font-size: 1.3rem;
+}
+
+.scrollable-table {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.qr-elegant {
+  background: linear-gradient(145deg, #ffffff, #f9fef9);
+  border-radius: 32px;
+  transition: all 0.2s;
+}
+
+.status-badge {
+  background: #e9f7ef;
+  color: #0f4c2a;
+}
+
+/* custom scroll */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: #dce8dc;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: #0f4c2a;
+  border-radius: 10px;
+}
+
+.animate-float {
+  animation: softFade 0.3s ease-out;
+}
+@keyframes softFade {
+  from { opacity: 0; transform: translateY(8px);}
+  to { opacity: 1; transform: translateY(0);}
+}
+
+.dashboard-stat {
+  transition: all 0.2s;
+}
+
+.dashboard-stat:hover {
+  transform: translateY(-3px);
+}

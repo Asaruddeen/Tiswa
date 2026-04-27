@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>TISWA Admin Panel | Full Control Dashboard</title>
+  <!-- Tailwind CSS + Font Awesome + Google Fonts (Poppins) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+    }
+    body {
+      background: #f0f4f0;
+      padding-bottom: 30px;
+    }
+    :root {
+      --primary-deep: #0f4c2a;
+      --primary-soft: #1e6f3f;
+      --primary-light: #e8f3e8;
+      --accent-gold: #c9a03d;
+    }
+    .bg-mosque-gradient {
+      background: linear-gradient(145deg, #0f4c2a 0%, #1b6b3c 100%);
+    }
+    .admin-card {
+      background: white;
+      border-radius: 28px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+      transition: all 0.2s ease;
+    }
+    .admin-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 32px rgba(15, 76, 42, 0.1);
+    }
+    .modal-overlay {
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+    }
+    .scrollable-table {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #e2e8e2;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #0f4c2a;
+      border-radius: 10px;
+    }
+    .status-badge {
+      background: #e9f7ef;
+      color: #0f4c2a;
+    }
+    .animate-fade {
+      animation: fadeSlide 0.25s ease-out;
+    }
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(8px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+    input, select, textarea {
+      transition: all 0.2s;
+    }
+    input:focus, select:focus {
+      border-color: #0f4c2a;
+      ring: 2px solid #0f4c2a;
+      outline: none;
+    }
+  </style>
+</head>
+<body class="antialiased">
+
+  <div class="max-w-7xl mx-auto px-4 py-6 md:px-6 lg:px-8">
+    <!-- HEADER with Logo -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+      <div class="flex items-center gap-4">
+        <div class="bg-mosque-gradient w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg">
+          <i class="fas fa-mosque text-white text-3xl"></i>
+        </div>
+        <div>
+          <h1 class="text-3xl font-extrabold text-gray-800 tracking-tight">TISWA <span class="text-green-700">Admin</span></h1>
+          <p class="text-sm text-gray-500 -mt-0.5">Full Management Suite • Complete Control</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3 bg-white/80 backdrop-blur px-5 py-2 rounded-full shadow-sm">
+        <i class="fas fa-shield-alt text-green-700"></i>
+        <span class="text-sm font-medium text-gray-700">Administrator Access</span>
+        <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+      </div>
+    </div>
+
+    <!-- STATS CARDS (Real-time) -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8" id="statsContainer">
+      <!-- dynamic stats injected via JS -->
+    </div>
+
+    <!-- TABS / SECTIONS (Admin full page) -->
+    <div class="bg-white rounded-3xl shadow-md overflow-hidden mb-8">
+      <div class="flex flex-wrap border-b border-gray-200 bg-gray-50/50">
+        <button data-tab="members" class="tab-btn px-5 py-3 font-semibold text-sm transition-all flex items-center gap-2 border-b-2 border-transparent hover:text-green-700"><i class="fas fa-users"></i> Members</button>
+        <button data-tab="payments" class="tab-btn px-5 py-3 font-semibold text-sm transition-all flex items-center gap-2 border-b-2 border-transparent hover:text-green-700"><i class="fas fa-qrcode"></i> Payments</button>
+        <button data-tab="expenses" class="tab-btn px-5 py-3 font-semibold text-sm transition-all flex items-center gap-2 border-b-2 border-transparent hover:text-green-700"><i class="fas fa-receipt"></i> Expenses</button>
+        <button data-tab="history" class="tab-btn px-5 py-3 font-semibold text-sm transition-all flex items-center gap-2 border-b-2 border-transparent hover:text-green-700"><i class="fas fa-clock"></i> Payment History</button>
+        <button data-tab="sports" class="tab-btn px-5 py-3 font-semibold text-sm transition-all flex items-center gap-2 border-b-2 border-transparent hover:text-green-700"><i class="fas fa-futbol"></i> Sports Updates</button>
+        <button data-tab="dashboard" class="tab-btn px-5 py-3 font-semibold text-sm transition-all flex items-center gap-2 border-b-2 border-transparent hover:text-green-700"><i class="fas fa-chart-line"></i> Balance Dashboard</button>
+      </div>
+      
+      <div id="tabContent" class="p-5 md:p-6 animate-fade">
+        <!-- dynamic content -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL for Add/Edit -->
+  <div id="modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-overlay transition-all" style="display: none;">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl transform transition-all">
+      <div class="flex justify-between items-center mb-4">
+        <h3 id="modalTitle" class="text-xl font-bold text-gray-800">Add New</h3>
+        <button id="closeModal" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
+      </div>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script>
+    // ------------------- FULL ADMIN DATA (with localStorage) -------------------
+    let members = [
+      { id: "m1", name: "Asaruddeen", mobile: "+91 98765 43210", role: "Founder & Admin", joinDate: "2024-01-15" },
+      { id: "m2", name: "Udhay Kumar", mobile: "+91 98765 43211", role: "General Secretary", joinDate: "2024-02-10" },
+      { id: "m3", name: "Rahman Ali", mobile: "+91 99887 66551", role: "Finance Head", joinDate: "2024-03-01" },
+      { id: "m4", name: "Fazil Mohammed", mobile: "+91 98765 01234", role: "Events Director", joinDate: "2024-03-15" },
+      { id: "m5", name: "Nabeel Ahmed", mobile: "+91 97654 32109", role: "Member", joinDate: "2024-04-10" }
+    ];
+
+    let payments = [
+      { id: "p1", name: "Asaruddeen", amount: 1250, date: "2026-04-14", status: "Success", ref: "TXN001", method: "UPI" },
+      { id: "p2", name: "Abdul Rahman", amount: 500, date: "2026-04-12", status: "Success", ref: "TXN002", method: "QR" },
+      { id: "p3", name: "Udhay K", amount: 800, date: "2026-04-11", status: "Success", ref: "TXN003", method: "Cash" },
+      { id: "p4", name: "Riyas A", amount: 750, date: "2026-04-10", status: "Success", ref: "TXN004", method: "UPI" },
+      { id: "p5", name: "Shameer M", amount: 1200, date: "2026-04-08", status: "Success", ref: "TXN005", method: "Bank" },
+      { id: "p6", name: "Haneefa", amount: 2100, date: "2026-04-15", status: "Success", ref: "TXN006", method: "UPI" }
+    ];
+
+    let expenses = [
+      { id: "e1", item: "Professional Cricket Kit", amount: 3200, date: "2026-04-05", category: "Sports", note: "6 bats + balls" },
+      { id: "e2", item: "Stumps & Bails Set", amount: 850, date: "2026-04-06", category: "Sports", note: "wooden quality" },
+      { id: "e3", item: "Match Refreshments", amount: 1250, date: "2026-04-09", category: "Event", note: "water & snacks" },
+      { id: "e4", item: "Team Jerseys (8 pcs)", amount: 5400, date: "2026-04-11", category: "Apparel", note: "customized" },
+      { id: "e5", item: "First Aid & Hydration", amount: 780, date: "2026-04-13", category: "Medical", note: "emergency kit" }
+    ];
+
+    let sportsData = {
+      tournament: "Ramadan Cricket Cup 2026",
+      winner: "Team A (Green Stallions)",
+      runner: "Team B (United Warriors)",
+      manOfSeries: "Asaruddeen",
+      bestBowler: "Udhay (9 wickets)",
+      updates: "Final match held on April 12. Great sportsmanship!"
+    };
+
+    // Helper functions
+    function getTotalCollected() { return payments.reduce((s, p) => s + p.amount, 0); }
+    function getTotalSpent() { return expenses.reduce((s, e) => s + e.amount, 0); }
+    function getRemainingBalance() { return getTotalCollected() - getTotalSpent(); }
+    function formatDate(dateStr) { return new Date(dateStr).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }); }
+    function formatCurrency(amt) { return '₹ ' + amt.toLocaleString('en-IN'); }
+
+    // Persistence
+    function saveAllData() {
+      localStorage.setItem('tiswa_admin_members', JSON.stringify(members));
+      localStorage.setItem('tiswa_admin_payments', JSON.stringify(payments));
+      localStorage.setItem('tiswa_admin_expenses', JSON.stringify(expenses));
+      localStorage.setItem('tiswa_admin_sports', JSON.stringify(sportsData));
+    }
+    function loadAllData() {
+      const m = localStorage.getItem('tiswa_admin_members');
+      const p = localStorage.getItem('tiswa_admin_payments');
+      const e = localStorage.getItem('tiswa_admin_expenses');
+      const s = localStorage.getItem('tiswa_admin_sports');
+      if(m) members = JSON.parse(m);
+      if(p) payments = JSON.parse(p);
+      if(e) expenses = JSON.parse(e);
+      if(s) sportsData = JSON.parse(s);
+    }
+
+    // Helper: generate unique id
+    function uid(prefix) { return prefix + Date.now() + '-' + Math.random().toString(36).substr(2, 6); }
+
+    // ---------- RENDER FUNCTIONS (Admin full views) ----------
+    let currentTab = "members";
+
+    function updateStats() {
+      const collected = getTotalCollected();
+      const spent = getTotalSpent();
+      const balance = getRemainingBalance();
+      const memberCount = members.length;
+      const statsHtml = `
+        <div class="bg-white rounded-2xl p-4 shadow-sm border-l-4 border-green-700"><p class="text-gray-500 text-xs">Total Members</p><p class="text-2xl font-black text-gray-800">${memberCount}</p><i class="fas fa-user-friends text-green-200 absolute right-4 bottom-2 text-3xl"></i></div>
+        <div class="bg-white rounded-2xl p-4 shadow-sm border-l-4 border-blue-600"><p class="text-gray-500 text-xs">Total Collected</p><p class="text-2xl font-black text-green-700">${formatCurrency(collected)}</p></div>
+        <div class="bg-white rounded-2xl p-4 shadow-sm border-l-4 border-red-500"><p class="text-gray-500 text-xs">Total Expenses</p><p class="text-2xl font-black text-red-600">${formatCurrency(spent)}</p></div>
+        <div class="bg-mosque-gradient rounded-2xl p-4 text-white shadow-md"><p class="text-green-100 text-xs">Remaining</p><p class="text-2xl font-black">${formatCurrency(balance)}</p></div>
+      `;
+      document.getElementById('statsContainer').innerHTML = statsHtml;
+    }
+
+    function renderMembersTab() {
+      return `
+        <div class="flex justify-between items-center mb-5 flex-wrap gap-3">
+          <h2 class="text-xl font-bold text-gray-800"><i class="fas fa-users text-green-700 mr-2"></i>Manage Members</h2>
+          <button onclick="openAddMemberModal()" class="bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded-xl text-sm flex items-center gap-2 shadow"><i class="fas fa-plus"></i> Add Member</button>
+        </div>
+        <div class="scrollable-table">
+          <table class="min-w-full bg-white rounded-2xl overflow-hidden border">
+            <thead class="bg-gray-100 text-gray-700 text-sm"> <tr><th class="p-3 text-left">Name</th><th class="p-3 text-left">Mobile</th><th class="p-3 text-left">Role</th><th class="p-3 text-center">Actions</th></tr> </thead>
+            <tbody>
+              ${members.map(m => `<tr class="border-b hover:bg-green-50/40"><td class="p-3 font-medium">${m.name}</td><td class="p-3 text-gray-600">${m.mobile}</td><td class="p-3"><span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">${m.role}</span></td><td class="p-3 text-center"><button onclick='editMember("${m.id}")' class="text-blue-600 mr-3"><i class="fas fa-edit"></i></button><button onclick='deleteMember("${m.id}")' class="text-red-500"><i class="fas fa-trash-alt"></i></button></td></tr>`).join('')}
+              ${members.length === 0 ? '<tr><td colspan="4" class="text-center p-6 text-gray-400">No members added</td></tr>' : ''}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function renderPaymentsTab() {
+      return `
+        <div class="flex justify-between items-center mb-5"><h2 class="text-xl font-bold"><i class="fas fa-hand-holding-usd text-green-700 mr-2"></i>Record New Payment</h2><button onclick="openAddPaymentModal()" class="bg-green-700 text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-plus-circle"></i> Add Payment</button></div>
+        <div class="scrollable-table"><table class="min-w-full bg-white rounded-2xl border"><thead class="bg-gray-100"><tr><th class="p-3">Name</th><th class="p-3">Amount</th><th class="p-3">Date</th><th class="p-3">Status</th><th class="p-3">Actions</th></tr></thead><tbody>${payments.map(p => `<tr class="border-b"><td class="p-3">${p.name}</td><td class="p-3 font-semibold text-green-700">${formatCurrency(p.amount)}</td><td class="p-3 text-sm">${formatDate(p.date)}</td><td class="p-3"><span class="status-badge px-2 py-0.5 rounded-full text-xs">${p.status}</span></td><td class="p-3"><button onclick='deletePayment("${p.id}")' class="text-red-500"><i class="fas fa-trash"></i></button></td></tr>`).join('')}</tbody></table></div>
+      `;
+    }
+
+    function renderExpensesTab() {
+      return `
+        <div class="flex justify-between items-center mb-5"><h2 class="text-xl font-bold"><i class="fas fa-shopping-cart text-green-700 mr-2"></i>Expense Management</h2><button onclick="openAddExpenseModal()" class="bg-green-700 text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-plus"></i> Add Expense</button></div>
+        <div class="scrollable-table"><table class="min-w-full bg-white border"><thead class="bg-gray-100"><tr><th class="p-3">Item</th><th class="p-3">Amount</th><th class="p-3">Date</th><th class="p-3">Category</th><th class="p-3">Actions</th></tr></thead><tbody>${expenses.map(e => `<tr class="border-b"><td class="p-3 font-medium">${e.item}</td><td class="p-3 text-red-600 font-semibold">${formatCurrency(e.amount)}</td><td class="p-3 text-sm">${formatDate(e.date)}</td><td class="p-3"><span class="text-xs bg-gray-100 px-2 py-1 rounded">${e.category}</span></td><td class="p-3"><button onclick='deleteExpense("${e.id}")' class="text-red-500"><i class="fas fa-trash-alt"></i></button></td></tr>`).join('')}</tbody></table></div>
+      `;
+    }
+
+    function renderHistoryTab() {
+      const sorted = [...payments].sort((a,b)=>new Date(b.date)-new Date(a.date));
+      return `<div><h2 class="text-xl font-bold mb-4"><i class="fas fa-history text-green-700 mr-2"></i>Complete Payment Ledger</h2><div class="scrollable-table"><table class="min-w-full bg-white rounded-2xl border"><thead class="bg-gray-100"><tr><th class="p-3">Name</th><th class="p-3">Amount</th><th class="p-3">Date</th><th class="p-3">Ref</th><th class="p-3">Status</th></tr></thead><tbody>${sorted.map(p => `<tr><td class="p-3">${p.name}</td><td class="p-3 text-green-700 font-bold">${formatCurrency(p.amount)}</td><td class="p-3">${formatDate(p.date)}</td><td class="p-3 text-xs">${p.ref}</td><td class="p-3"><span class="bg-green-100 text-green-800 px-2 py-0.5 rounded-full text-xs"><i class="fas fa-check"></i> ${p.status}</span></td></tr>`).join('')}</tbody></table></div></div>`;
+    }
+
+    function renderSportsTab() {
+      return `
+        <div><h2 class="text-xl font-bold mb-4"><i class="fas fa-futbol text-green-700 mr-2"></i>Sports Tournament Control</h2>
+        <div class="bg-white rounded-2xl p-5 border">
+          <div class="grid md:grid-cols-2 gap-4"><div><label class="block text-sm font-medium">Winner</label><input id="sportsWinner" class="w-full border rounded-xl p-2 mt-1" value="${sportsData.winner}"></div><div><label class="block text-sm font-medium">Runner Up</label><input id="sportsRunner" class="w-full border rounded-xl p-2 mt-1" value="${sportsData.runner}"></div></div>
+          <div class="mt-3"><label class="block text-sm font-medium">Man of Series</label><input id="sportsMan" class="w-full border rounded-xl p-2 mt-1" value="${sportsData.manOfSeries}"></div>
+          <div class="mt-3"><label class="block text-sm font-medium">Best Bowler</label><input id="sportsBowler" class="w-full border rounded-xl p-2 mt-1" value="${sportsData.bestBowler}"></div>
+          <div class="mt-3"><label class="block text-sm font-medium">Extra Updates</label><textarea id="sportsUpdates" rows="2" class="w-full border rounded-xl p-2">${sportsData.updates}</textarea></div>
+          <button onclick="updateSports()" class="mt-4 bg-green-700 text-white px-5 py-2 rounded-xl">Save Sports Updates</button>
+        </div></div>
+      `;
+    }
+
+    function renderDashboardTab() {
+      const collected = getTotalCollected();
+      const spent = getTotalSpent();
+      const bal = getRemainingBalance();
+      const percent = collected ? (bal/collected)*100 : 0;
+      return `<div><h2 class="text-2xl font-bold mb-4"><i class="fas fa-chart-pie text-green-700 mr-2"></i>Financial Balance Dashboard</h2>
+      <div class="grid md:grid-cols-3 gap-5 mb-6"><div class="admin-card p-5"><p class="text-gray-500">Total Collected</p><p class="text-3xl font-black text-green-700">${formatCurrency(collected)}</p></div><div class="admin-card p-5"><p class="text-gray-500">Total Spent</p><p class="text-3xl font-black text-red-600">${formatCurrency(spent)}</p></div><div class="bg-mosque-gradient p-5 rounded-3xl text-white"><p>Remaining</p><p class="text-3xl font-black">${formatCurrency(bal)}</p></div></div>
+      <div class="bg-white p-6 rounded-3xl"><div class="w-full bg-gray-200 rounded-full h-4"><div class="bg-green-700 h-4 rounded-full" style="width: ${percent}%"></div></div><p class="text-center text-sm mt-3">Fund Reserve Ratio: ${Math.round(percent)}%</p></div>
+      <div class="mt-5 grid md:grid-cols-2 gap-4 text-sm"><div class="bg-gray-50 p-3 rounded-xl"><i class="fas fa-chart-line"></i> Total transactions: ${payments.length}</div><div class="bg-gray-50 p-3 rounded-xl"><i class="fas fa-receipt"></i> Total expense entries: ${expenses.length}</div></div></div>`;
+    }
+
+    // CRUD operations
+    window.openAddMemberModal = () => {
+      document.getElementById('modalTitle').innerText = "Add New Member";
+      document.getElementById('modalBody').innerHTML = `<input id="memberName" placeholder="Full Name" class="w-full border p-3 rounded-xl mb-3"><input id="memberMobile" placeholder="Mobile" class="w-full border p-3 rounded-xl mb-3"><input id="memberRole" placeholder="Role (Admin/Member)" class="w-full border p-3 rounded-xl mb-3"><button onclick="addMember()" class="bg-green-700 w-full text-white py-3 rounded-xl">Create Member</button>`;
+      document.getElementById('modal').style.display = 'flex';
+    };
+    window.addMember = () => {
+      const name = document.getElementById('memberName').value;
+      const mobile = document.getElementById('memberMobile').value;
+      const role = document.getElementById('memberRole').value || "Member";
+      if(!name) return alert("Name required");
+      members.push({ id: uid('m'), name, mobile, role, joinDate: new Date().toISOString().slice(0,10) });
+      saveAllData(); updateStats(); renderCurrentTab();
+      closeModalFunc();
+    };
+    window.editMember = (id) => { const m = members.find(m=>m.id===id); if(m){ document.getElementById('modalTitle').innerText="Edit Member"; document.getElementById('modalBody').innerHTML=`<input id="editName" value="${m.name}" class="w-full border p-3 rounded-xl mb-3"><input id="editMobile" value="${m.mobile}" class="w-full border p-3 rounded-xl mb-3"><input id="editRole" value="${m.role}" class="w-full border p-3 rounded-xl mb-3"><button onclick="saveMemberEdit('${id}')" class="bg-green-700 w-full py-3 rounded-xl">Save</button>`; document.getElementById('modal').style.display='flex'; } };
+    window.saveMemberEdit = (id) => { const m = members.find(m=>m.id===id); if(m){ m.name=document.getElementById('editName').value; m.mobile=document.getElementById('editMobile').value; m.role=document.getElementById('editRole').value; saveAllData(); updateStats(); renderCurrentTab(); closeModalFunc(); } };
+    window.deleteMember = (id) => { if(confirm("Delete member?")){ members = members.filter(m=>m.id!==id); saveAllData(); updateStats(); renderCurrentTab(); } };
+    window.openAddPaymentModal = () => { document.getElementById('modalTitle').innerText="Record Payment"; document.getElementById('modalBody').innerHTML=`<input id="payName" placeholder="Member Name" class="w-full border p-3 rounded-xl mb-3"><input id="payAmount" type="number" placeholder="Amount" class="w-full border p-3 rounded-xl mb-3"><input id="payDate" type="date" value="${new Date().toISOString().slice(0,10)}" class="w-full border p-3 rounded-xl mb-3"><button onclick="addPayment()" class="bg-green-700 w-full py-3 rounded-xl">Add Payment</button>`; document.getElementById('modal').style.display='flex'; };
+    window.addPayment = () => { const name=document.getElementById('payName').value; const amount=parseFloat(document.getElementById('payAmount').value); const date=document.getElementById('payDate').value; if(!name||!amount) return alert("Enter details"); payments.push({ id:uid('p'), name, amount, date, status:"Success", ref:"ADMIN"+Math.floor(Math.random()*9999), method:"Manual" }); saveAllData(); updateStats(); renderCurrentTab(); closeModalFunc(); };
+    window.deletePayment = (id) => { if(confirm("Delete payment?")){ payments = payments.filter(p=>p.id!==id); saveAllData(); updateStats(); renderCurrentTab(); } };
+    window.openAddExpenseModal = () => { document.getElementById('modalTitle').innerText="Add Expense"; document.getElementById('modalBody').innerHTML=`<input id="expItem" placeholder="Item name" class="w-full border p-3 rounded-xl mb-3"><input id="expAmount" type="number" placeholder="Amount" class="w-full border p-3 rounded-xl mb-3"><input id="expDate" type="date" value="${new Date().toISOString().slice(0,10)}" class="w-full border p-3 rounded-xl mb-3"><input id="expCat" placeholder="Category" class="w-full border p-3 rounded-xl mb-3"><button onclick="addExpense()" class="bg-green-700 w-full py-3 rounded-xl">Add Expense</button>`; document.getElementById('modal').style.display='flex'; };
+    window.addExpense = () => { const item=document.getElementById('expItem').value; const amount=parseFloat(document.getElementById('expAmount').value); const date=document.getElementById('expDate').value; const cat=document.getElementById('expCat').value||"General"; if(!item||!amount) return; expenses.push({ id:uid('e'), item, amount, date, category:cat, note:"" }); saveAllData(); updateStats(); renderCurrentTab(); closeModalFunc(); };
+    window.deleteExpense = (id) => { if(confirm("Delete expense?")){ expenses = expenses.filter(e=>e.id!==id); saveAllData(); updateStats(); renderCurrentTab(); } };
+    window.updateSports = () => { sportsData.winner=document.getElementById('sportsWinner').value; sportsData.runner=document.getElementById('sportsRunner').value; sportsData.manOfSeries=document.getElementById('sportsMan').value; sportsData.bestBowler=document.getElementById('sportsBowler').value; sportsData.updates=document.getElementById('sportsUpdates').value; saveAllData(); alert("Sports data updated!"); renderCurrentTab(); };
+    
+    function closeModalFunc() { document.getElementById('modal').style.display = 'none'; }
+    function renderCurrentTab() {
+      let html = "";
+      if(currentTab === "members") html = renderMembersTab();
+      else if(currentTab === "payments") html = renderPaymentsTab();
+      else if(currentTab === "expenses") html = renderExpensesTab();
+      else if(currentTab === "history") html = renderHistoryTab();
+      else if(currentTab === "sports") html = renderSportsTab();
+      else if(currentTab === "dashboard") html = renderDashboardTab();
+      document.getElementById('tabContent').innerHTML = html;
+    }
+    function setActiveTab(tabId) {
+      currentTab = tabId;
+      renderCurrentTab();
+      document.querySelectorAll('.tab-btn').forEach(btn => { btn.classList.remove('border-green-700', 'text-green-700', 'border-b-2'); if(btn.getAttribute('data-tab')===tabId) btn.classList.add('border-green-700', 'text-green-700', 'border-b-2'); else btn.classList.add('border-transparent'); });
+    }
+    function initTabs() { document.querySelectorAll('.tab-btn').forEach(btn => { btn.addEventListener('click', () => setActiveTab(btn.getAttribute('data-tab'))); }); }
+    window.closeModalFunc = closeModalFunc;
+    document.getElementById('closeModal').onclick = closeModalFunc;
+    document.getElementById('modal').addEventListener('click', (e) => { if(e.target === document.getElementById('modal')) closeModalFunc(); });
+    
+    loadAllData();
+    updateStats();
+    setActiveTab("members");
+    initTabs();
+    setInterval(() => { updateStats(); saveAllData(); }, 5000);
+  </script>
+</body>
+</html>

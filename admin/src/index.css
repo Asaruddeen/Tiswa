@@ -1,0 +1,82 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+* {
+  font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+}
+
+body {
+  background: #f0f4f0;
+  padding-bottom: 30px;
+}
+
+:root {
+  --primary-deep: #0f4c2a;
+  --primary-soft: #1e6f3f;
+  --primary-light: #e8f3e8;
+  --accent-gold: #c9a03d;
+}
+
+.bg-mosque-gradient {
+  background: linear-gradient(145deg, #0f4c2a 0%, #1b6b3c 100%);
+}
+
+.admin-card {
+  background: white;
+  border-radius: 28px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.admin-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 32px rgba(15, 76, 42, 0.1);
+}
+
+.modal-overlay {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+}
+
+.scrollable-table {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: #e2e8e2;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: #0f4c2a;
+  border-radius: 10px;
+}
+
+.status-badge {
+  background: #e9f7ef;
+  color: #0f4c2a;
+}
+
+.animate-fade {
+  animation: fadeSlide 0.25s ease-out;
+}
+
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(8px);}
+  to { opacity: 1; transform: translateY(0);}
+}
+
+input, select, textarea {
+  transition: all 0.2s;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: #0f4c2a;
+  box-shadow: 0 0 0 2px rgba(15, 76, 42, 0.2);
+  outline: none;
+}
