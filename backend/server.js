@@ -11,7 +11,14 @@ const Settings = require('./models/Settings');
 const cloudinary = require('cloudinary').v2;
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: [
+    'https://tiswa.vercel.app',
+    'https://tiswaadmin.vercel.app',
+    'http://localhost:5173',
+    'http://localhost:5174'
+  ]
+}));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
