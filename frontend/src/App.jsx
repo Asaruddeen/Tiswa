@@ -7,7 +7,7 @@ import Sports from './views/Sports';
 import Expense from './views/Expense';
 import Dashboard from './views/Dashboard';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'https://tiswa.onrender.com/api';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');

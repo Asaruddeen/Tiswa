@@ -9,7 +9,7 @@ import Settings from './views/Settings';
 import Modal from './components/Modal';
 import { getTotalCollected, getTotalSpent, getRemainingBalance, formatCurrency } from './utils';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'https://tiswa.onrender.com/api';
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState('members');
