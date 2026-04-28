@@ -140,5 +140,14 @@ app.put('/api/settings', async (req, res) => {
   }
 });
 
+// Health Check Routes
+app.get("/", (req, res) => {
+  res.send("API Running ✅");
+});
+
+app.get("/health", (req, res) => {
+  res.status(200).json({ ok: true });
+});
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Backend server running on port ${PORT}`));
