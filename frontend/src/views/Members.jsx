@@ -14,7 +14,7 @@ export default function Members({ members }) {
           <table className="min-w-full text-sm">
             <thead className="bg-green-50 text-gray-700 text-xs font-semibold">
               <tr>
-                <th className="px-5 py-3 text-left">Member</th>
+                <th className="px-5 py-3 text-left">Name</th>
                 <th className="px-5 py-3 text-left">Mobile</th>
                 <th className="px-5 py-3 text-left">Role</th>
               </tr>
