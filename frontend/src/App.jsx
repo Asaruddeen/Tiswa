@@ -18,10 +18,10 @@ function App() {
   const [settings, setSettings] = useState({ upiId: 'tiswa@icici', qrImage: '' });
 
   useEffect(() => {
-    fetch(`${API_URL}/members`).then(res => res.json()).then(data => setMembers(data)).catch(console.error);
-    fetch(`${API_URL}/payments`).then(res => res.json()).then(data => setPayments(data)).catch(console.error);
-    fetch(`${API_URL}/expenses`).then(res => res.json()).then(data => setExpenses(data)).catch(console.error);
-    fetch(`${API_URL}/settings`).then(res => res.json()).then(data => setSettings(data)).catch(console.error);
+    fetch(`${API_URL}/members`).then(res => res.json()).then(setMembers).catch(console.error);
+    fetch(`${API_URL}/payments`).then(res => res.json()).then(setPayments).catch(console.error);
+    fetch(`${API_URL}/expenses`).then(res => res.json()).then(setExpenses).catch(console.error);
+    fetch(`${API_URL}/settings`).then(res => res.json()).then(setSettings).catch(console.error);
   }, []);
 
   const navItems = [
@@ -35,11 +35,7 @@ function App() {
   ];
 
   return (
-    <div className="max-w-lg mx-auto px-4 pt-6 pb-20 relative">
-      {/* Header with Logo */}
-      <div className="mb-6">
-        <Logo size="md" />
-      </div>
+    <div className="max-w-lg mx-auto px-4 pt-6 relative min-h-screen" style={{ paddingBottom: 'calc(6.5rem + env(safe-area-inset-bottom))' }}>
 
       <div>
         {currentPage === 'home' && <Home payments={payments} expenses={expenses} />}
@@ -51,10 +47,13 @@ function App() {
         {currentPage === 'dashboard' && <Dashboard payments={payments} expenses={expenses} />}
       </div>
 
-      {/* Bottom Navigation - Compact */}
-      <div className="fixed bottom-2 left-0 right-0 flex justify-center z-40">
-        <div className="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/40 w-[calc(100%-1.5rem)] max-w-md mx-auto px-1 py-1.5">
-          <div className="flex justify-around items-center">
+      {/* Bottom Navigation */}
+      <div
+        className="fixed bottom-0 left-0 right-0 flex justify-center z-40 px-2"
+        style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom))' }}
+      >
+        <nav className="tiswa-nav bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/40 w-full max-w-md mx-auto px-1.5 py-1.5">
+          <div className="flex items-stretch justify-between gap-0.5 overflow-x-auto scrollbar-hide">
             {navItems.map(item => (
               <button
                 key={item.id}
@@ -62,21 +61,44 @@ function App() {
                   setCurrentPage(item.id);
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
-                className={`nav-btn flex flex-col items-center gap-0.5 px-1.5 py-1 rounded-xl transition-all duration-200 border-none ${
-                  currentPage === item.id 
-                    ? 'active bg-green-700 text-white shadow-[0_4px_12px_rgba(15,76,42,0.25)]' 
-                    : 'text-gray-600 bg-transparent hover:bg-gray-100'
+                className={`nav-btn flex flex-col items-center justify-center gap-0.5 rounded-2xl transition-all duration-200 border-none flex-shrink-0 ${
+                  currentPage === item.id
+                    ? 'active bg-green-700 text-white shadow-[0_6px_14px_rgba(15,76,42,0.25)]'
+                    : 'text-gray-600 bg-transparent'
                 }`}
               >
-                <i className={`${item.icon} text-sm sm:text-base`}></i>
-                <span className="text-[7px] sm:text-[9px] font-medium leading-tight whitespace-nowrap">
-                  {item.label}
-                </span>
+                <i className={`${item.icon} nav-icon`}></i>
+                <span className="nav-label font-medium leading-tight">{item.label}</span>
               </button>
             ))}
           </div>
-        </div>
+        </nav>
       </div>
+
+      <style>{`
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .nav-btn {
+          min-width: 44px;
+          min-height: 44px;
+          padding: 6px clamp(4px, 1.8vw, 10px);
+          -webkit-tap-highlight-color: transparent;
+        }
+        .nav-icon {
+          font-size: clamp(15px, 4.2vw, 19px);
+        }
+        .nav-label {
+          font-size: clamp(8px, 2.4vw, 10px);
+          white-space: nowrap;
+        }
+
+        /* Very small phones (old iPhone SE, etc.) — shrink further before scroll kicks in */
+        @media (max-width: 340px) {
+          .nav-btn { min-width: 40px; padding: 5px 3px; }
+          .nav-label { font-size: 7.5px; }
+        }
+      `}</style>
     </div>
   );
 }
