@@ -3,11 +3,15 @@ import Home from './views/Home';
 import Members from './views/Members';
 import Payment from './views/Payment';
 import History from './views/History';
-import Sports from './views/Sports';
+import Events from './views/Events'; // Changed from Sports to Events
 import Expense from './views/Expense';
 import Dashboard from './views/Dashboard';
+import Logo from './components/Logo'; // Import Logo component
+
 
 const API_URL = 'https://tiswa.onrender.com/api';
+// const API_URL = 'http://localhost:5000/api';
+
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
@@ -28,7 +32,7 @@ function App() {
     { id: 'members', icon: 'fas fa-users', label: 'Members' },
     { id: 'payment', icon: 'fas fa-qrcode', label: 'Pay' },
     { id: 'history', icon: 'fas fa-history', label: 'History' },
-    { id: 'sports', icon: 'fas fa-futbol', label: 'Sports' },
+    { id: 'events', icon: 'fas fa-calendar-alt', label: 'Events' }, // Changed from sports to events
     { id: 'expense', icon: 'fas fa-receipt', label: 'Expense' },
     { id: 'dashboard', icon: 'fas fa-chart-line', label: 'Balance' }
   ];
@@ -40,7 +44,7 @@ function App() {
         {currentPage === 'members' && <Members members={members} />}
         {currentPage === 'payment' && <Payment payments={payments} settings={settings} />}
         {currentPage === 'history' && <History payments={payments} />}
-        {currentPage === 'sports' && <Sports />}
+        {currentPage === 'events' && <Events />} {/* Changed from Sports to Events */}
         {currentPage === 'expense' && <Expense expenses={expenses} setExpenses={setExpenses} />}
         {currentPage === 'dashboard' && <Dashboard payments={payments} expenses={expenses} />}
       </div>

@@ -3,13 +3,17 @@ import Members from './views/Members';
 import Payments from './views/Payments';
 import Expenses from './views/Expenses';
 import History from './views/History';
-import Sports from './views/Sports';
+import Events from './views/Events';
 import Dashboard from './views/Dashboard';
 import Settings from './views/Settings';
 import Modal from './components/Modal';
+import Logo from './components/Logo'; // Import Logo component
+
 import { getTotalCollected, getTotalSpent, getRemainingBalance, formatCurrency } from './utils';
 
 const API_URL = 'https://tiswa.onrender.com/api';
+// const API_URL = 'http://localhost:5000/api';
+
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState('members');
@@ -17,7 +21,7 @@ export default function App() {
   const [members, setMembers] = useState([]);
   const [payments, setPayments] = useState([]);
   const [expenses, setExpenses] = useState([]);
-  const [sportsData, setSportsData] = useState({ tournament: '', winner: '', runner: '', manOfSeries: '', bestBowler: '', updates: '' });
+  const [events, setEvents] = useState([]);
   const [settings, setSettings] = useState({ upiId: 'tiswa@icici', qrImage: '' });
 
   // Fetch initial data
@@ -25,7 +29,7 @@ export default function App() {
     fetch(`${API_URL}/members`).then(res => res.json()).then(setMembers).catch(console.error);
     fetch(`${API_URL}/payments`).then(res => res.json()).then(setPayments).catch(console.error);
     fetch(`${API_URL}/expenses`).then(res => res.json()).then(setExpenses).catch(console.error);
-    fetch(`${API_URL}/sports`).then(res => res.json()).then(setSportsData).catch(console.error);
+    fetch(`${API_URL}/events`).then(res => res.json()).then(setEvents).catch(console.error);
     fetch(`${API_URL}/settings`).then(res => res.json()).then(setSettings).catch(console.error);
   }, []);
 
@@ -37,6 +41,14 @@ export default function App() {
   const [memberForm, setMemberForm] = useState({ name: '', mobile: '', role: '' });
   const [paymentForm, setPaymentForm] = useState({ name: '', amount: '', date: new Date().toISOString().slice(0,10) });
   const [expenseForm, setExpenseForm] = useState({ item: '', amount: '', date: new Date().toISOString().slice(0,10), category: '' });
+  const [eventForm, setEventForm] = useState({ 
+    title: '', 
+    description: '', 
+    date: new Date().toISOString().slice(0,16), 
+    image: '', 
+    location: '', 
+    status: 'upcoming' 
+  });
 
   // Handlers
   const handleMemberSubmit = async () => {
@@ -68,6 +80,7 @@ export default function App() {
     setPayments([...payments, newP]);
     closeModal();
   };
+
   const deletePayment = async (id) => {
     if(window.confirm("Delete payment?")) {
       await fetch(`${API_URL}/payments/${id}`, { method: 'DELETE' });
@@ -83,6 +96,7 @@ export default function App() {
     setExpenses([...expenses, newE]);
     closeModal();
   };
+
   const deleteExpense = async (id) => {
     if(window.confirm("Delete expense?")) {
       await fetch(`${API_URL}/expenses/${id}`, { method: 'DELETE' });
@@ -90,10 +104,48 @@ export default function App() {
     }
   };
 
-  const handleSportsUpdate = async (updatedSports) => {
-    const res = await fetch(`${API_URL}/sports`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updatedSports) });
-    const saved = await res.json();
-    setSportsData(saved);
+  // Event Handlers
+  const handleEventSubmit = async () => {
+    if(!eventForm.title || !eventForm.description || !eventForm.date) {
+      alert('Please fill in all required fields');
+      return;
+    }
+    
+    try {
+      if (modalState.type === 'editEvent') {
+        const res = await fetch(`${API_URL}/events/${modalState.payload}`, { 
+          method: 'PUT', 
+          headers: { 'Content-Type': 'application/json' }, 
+          body: JSON.stringify(eventForm) 
+        });
+        const updated = await res.json();
+        setEvents(events.map(e => e._id === modalState.payload ? updated : e));
+      } else {
+        const res = await fetch(`${API_URL}/events`, { 
+          method: 'POST', 
+          headers: { 'Content-Type': 'application/json' }, 
+          body: JSON.stringify(eventForm) 
+        });
+        const newEvent = await res.json();
+        setEvents([...events, newEvent]);
+      }
+      closeModal();
+    } catch (error) {
+      console.error("Event Submit Error:", error);
+      alert("Failed to save event. Please check your connection.");
+    }
+  };
+
+  const deleteEvent = async (id) => {
+    if(window.confirm("Delete this event?")) {
+      try {
+        await fetch(`${API_URL}/events/${id}`, { method: 'DELETE' });
+        setEvents(events.filter(e => e._id !== id));
+      } catch (error) {
+        console.error("Delete Error:", error);
+        alert("Failed to delete event");
+      }
+    }
   };
 
   const handleSettingsUpdate = async (updatedSettings) => {
@@ -107,7 +159,7 @@ export default function App() {
     { id: 'payments', icon: 'fas fa-qrcode', label: 'Payments' },
     { id: 'expenses', icon: 'fas fa-receipt', label: 'Expenses' },
     { id: 'history', icon: 'fas fa-clock', label: 'Payment History' },
-    { id: 'sports', icon: 'fas fa-futbol', label: 'Sports Updates' },
+    { id: 'events', icon: 'fas fa-calendar-alt', label: 'Events' },
     { id: 'dashboard', icon: 'fas fa-chart-line', label: 'Balance Dashboard' },
     { id: 'settings', icon: 'fas fa-cogs', label: 'Settings' }
   ];
@@ -163,13 +215,40 @@ export default function App() {
           {currentTab === 'payments' && <Payments payments={payments} deletePayment={deletePayment} openAddPaymentModal={() => { setPaymentForm({name:'',amount:'',date:new Date().toISOString().slice(0,10)}); openModal('addPayment'); }} />}
           {currentTab === 'expenses' && <Expenses expenses={expenses} deleteExpense={deleteExpense} openAddExpenseModal={() => { setExpenseForm({item:'',amount:'',date:new Date().toISOString().slice(0,10),category:''}); openModal('addExpense'); }} />}
           {currentTab === 'history' && <History payments={payments} />}
-          {currentTab === 'sports' && <Sports sportsData={sportsData} setSportsData={handleSportsUpdate} />}
+          {currentTab === 'events' && <Events 
+            events={events} 
+            setEvents={setEvents}
+            openAddEventModal={() => { 
+              setEventForm({
+                title: '', 
+                description: '', 
+                date: new Date().toISOString().slice(0,16), 
+                image: '', 
+                location: '', 
+                status: 'upcoming'
+              }); 
+              openModal('addEvent'); 
+            }}
+            openEditEventModal={(event) => { 
+              const formattedDate = new Date(event.date).toISOString().slice(0,16);
+              setEventForm({...event, date: formattedDate}); 
+              openModal('editEvent', event._id); 
+            }}
+            deleteEvent={deleteEvent}
+          />}
           {currentTab === 'dashboard' && <Dashboard payments={payments} expenses={expenses} />}
           {currentTab === 'settings' && <Settings settings={settings} setSettings={handleSettingsUpdate} />}
         </div>
       </div>
 
-      <Modal isOpen={modalState.isOpen} onClose={closeModal} title={modalState.type === 'editMember' ? 'Edit Member' : modalState.type === 'addMember' ? 'Add Member' : modalState.type === 'addPayment' ? 'Record Payment' : 'Add Expense'}>
+      <Modal isOpen={modalState.isOpen} onClose={closeModal} title={
+        modalState.type === 'editMember' ? 'Edit Member' : 
+        modalState.type === 'addMember' ? 'Add Member' : 
+        modalState.type === 'addPayment' ? 'Record Payment' : 
+        modalState.type === 'addExpense' ? 'Add Expense' :
+        modalState.type === 'editEvent' ? 'Edit Event' :
+        modalState.type === 'addEvent' ? 'Add Event' : ''
+      }>
         {modalState.type?.includes('Member') && (
           <>
             <input value={memberForm.name} onChange={e=>setMemberForm({...memberForm, name: e.target.value})} placeholder="Full Name" className="w-full border p-3 rounded-xl mb-3" />
@@ -193,6 +272,90 @@ export default function App() {
             <input type="date" value={expenseForm.date} onChange={e=>setExpenseForm({...expenseForm, date: e.target.value})} className="w-full border p-3 rounded-xl mb-3" />
             <input value={expenseForm.category} onChange={e=>setExpenseForm({...expenseForm, category: e.target.value})} placeholder="Category" className="w-full border p-3 rounded-xl mb-3" />
             <button onClick={handleExpenseSubmit} className="bg-green-700 w-full text-white py-3 rounded-xl">Add Expense</button>
+          </>
+        )}
+        {(modalState.type === 'addEvent' || modalState.type === 'editEvent') && (
+          <>
+            <input 
+              value={eventForm.title} 
+              onChange={e=>setEventForm({...eventForm, title: e.target.value})} 
+              placeholder="Event Title *" 
+              className="w-full border p-3 rounded-xl mb-3" 
+              required
+            />
+            <textarea 
+              value={eventForm.description} 
+              onChange={e=>setEventForm({...eventForm, description: e.target.value})} 
+              placeholder="Event Description *" 
+              className="w-full border p-3 rounded-xl mb-3" 
+              rows="3"
+              required
+            />
+            <input 
+              type="datetime-local" 
+              value={eventForm.date} 
+              onChange={e=>setEventForm({...eventForm, date: e.target.value})} 
+              className="w-full border p-3 rounded-xl mb-3" 
+              required
+            />
+            <input 
+              value={eventForm.location} 
+              onChange={e=>setEventForm({...eventForm, location: e.target.value})} 
+              placeholder="Location" 
+              className="w-full border p-3 rounded-xl mb-3" 
+            />
+            <select 
+              value={eventForm.status} 
+              onChange={e=>setEventForm({...eventForm, status: e.target.value})} 
+              className="w-full border p-3 rounded-xl mb-3"
+            >
+              <option value="upcoming">Upcoming</option>
+              <option value="ongoing">Ongoing</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+            <div className="mb-3">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Event Image</label>
+              <input 
+                type="file" 
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  if (file) {
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                      setEventForm({...eventForm, image: reader.result});
+                    };
+                    reader.readAsDataURL(file);
+                  }
+                }}
+                className="w-full border p-2 rounded-xl"
+              />
+              {eventForm.image && eventForm.image.startsWith('data:image') && (
+                <div className="mt-2">
+                  <img 
+                    src={eventForm.image} 
+                    alt="Preview" 
+                    className="h-20 w-20 object-cover rounded-lg border"
+                  />
+                </div>
+              )}
+              {eventForm.image && !eventForm.image.startsWith('data:image') && (
+                <div className="mt-2">
+                  <img 
+                    src={eventForm.image} 
+                    alt="Preview" 
+                    className="h-20 w-20 object-cover rounded-lg border"
+                  />
+                </div>
+              )}
+            </div>
+            <button 
+              onClick={handleEventSubmit} 
+              className="bg-green-700 w-full text-white py-3 rounded-xl hover:bg-green-800 transition"
+            >
+              {modalState.type === 'editEvent' ? 'Update Event' : 'Create Event'}
+            </button>
           </>
         )}
       </Modal>
