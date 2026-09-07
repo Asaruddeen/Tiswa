@@ -7,7 +7,7 @@ export default function Home({ payments, expenses }) {
   const activities = getRecentActivity(payments, expenses);
 
   return (
-    <div className="space-y-5 animate-float">
+    <div className="space-y-5 animate-float pb-4">
       <div className="glass-card p-5 flex items-center justify-between bg-white">
         <div className="flex items-center gap-4">
           <div className="bg-mosque-gradient w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg">
@@ -56,6 +56,27 @@ export default function Home({ payments, expenses }) {
               <p className="text-sm text-gray-700 flex-1">{act.text}</p>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Powered By Section - Gradient Style */}
+      <div className="relative">
+        <div className="absolute inset-0 bg-gradient-to-r from-green-50 via-transparent to-green-50 rounded-2xl opacity-50"></div>
+        <div className="relative bg-white/60 backdrop-blur-sm rounded-2xl p-3 border border-green-100/30">
+          <div className="flex items-center justify-center gap-3">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-green-600 to-green-800 flex items-center justify-center shadow-md">
+                <i className="fas fa-crown text-white text-[10px]"></i>
+              </div>
+              <span className="text-xs text-gray-600">Powered by</span>
+            </div>
+            <span className="text-sm font-bold bg-gradient-to-r from-green-700 to-green-900 bg-clip-text text-transparent">
+              Yunrah Technologies
+            </span>
+            <span className="text-[10px] text-gray-400 bg-gray-100/50 px-2 py-0.5 rounded-full">
+              v1.0.0
+            </span>
+          </div>
         </div>
       </div>
     </div>
