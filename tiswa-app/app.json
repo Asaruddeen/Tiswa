@@ -1,0 +1,41 @@
+{
+  "expo": {
+    "name": "TISWA",
+    "slug": "tiswa",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#f0f4f0",
+    "plugins": [
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 200,
+          "backgroundColor": "#f0f4f0"
+        }
+      ]
+    ],
+    "android": {
+      "package": "com.yunrah.tiswa",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0b5a2e"
+      }
+    },
+    "ios": {
+      "bundleIdentifier": "com.yunrah.tiswa",
+      "supportsTablet": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "4f9b37be-8bb5-4b1d-90d9-bb7aa5d4ab96"
+      }
+    }
+  }
+}
